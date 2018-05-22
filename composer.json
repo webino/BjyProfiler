@@ -1,5 +1,5 @@
 {
-    "name": "bjyoungblood/bjy-profiler",
+    "name": "webino/zend-db-profiler",
     "description": "Database profiler for Zend\\Db (also plugin for ZendDeveloperTools)",
     "type": "library",
     "license": "MIT",
@@ -17,9 +17,12 @@
             "homepage": "http://bjyoungblood.com/"
         }
     ],
+    "replace": {
+        "bjyoungblood/bjy-profiler": "*"
+    },
     "require": {
-        "php": ">=5.3",
-        "zendframework/zend-db": ">=2.1.0"
+        "php": ">=7.1",
+        "zendframework/zend-db": "2.*"
     },
     "autoload": {
         "psr-0": {

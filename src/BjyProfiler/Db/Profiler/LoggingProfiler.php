@@ -16,10 +16,12 @@ class LoggingProfiler extends Profiler
      * @var Logger
      */
     protected $logger;
+
     /**
      * @var int
      */
     protected $priority = Logger::DEBUG;
+
     /**
      * How many query profiles could be stored in memory.
      * Useful for long-running scripts with tons of queries that can take all the memory.
@@ -30,6 +32,7 @@ class LoggingProfiler extends Profiler
      * @var int
      */
     protected $maxProfiles = 100;
+
     /**
      * Query parameters to log on query start
      *
@@ -37,6 +40,7 @@ class LoggingProfiler extends Profiler
      * @see Query
      */
     protected $parametersStart = array('sql', 'parameters');
+
     /**
      * Query parameters to log on query finish
      *
@@ -56,18 +60,21 @@ class LoggingProfiler extends Profiler
         if (isset($options['parametersFinish'])) $this->setParametersFinish($options['parametersFinish']);
     }
 
-    public function startQuery($sql, $parameters = null, $stack = null) {
+    public function startQuery($sql, $parameters = null, $stack = null)
+    {
         parent::startQuery($sql, $parameters, $stack);
         $this->logStart();
     }
 
-    public function endQuery() {
+    public function endQuery()
+    {
         parent::endQuery();
         $this->logEnd();
         $this->trimToMaxQueries();
     }
 
-    private function logStart() {
+    private function logStart()
+    {
         /** @var Query $lastQuery */
         $lastQuery = end($this->profiles);
         $this->getLogger()->log(
@@ -77,7 +84,8 @@ class LoggingProfiler extends Profiler
         );
     }
 
-    private function logEnd() {
+    private function logEnd()
+    {
         /** @var Query $lastQuery */
         $lastQuery = end($this->profiles);
         $this->getLogger()->log(
@@ -87,7 +95,8 @@ class LoggingProfiler extends Profiler
         );
     }
 
-    private function trimToMaxQueries() {
+    private function trimToMaxQueries()
+    {
         $maxProfiles = $this->getMaxProfiles();
         if ($maxProfiles > -1 && count($this->profiles) > $maxProfiles) {
             array_shift($this->profiles);

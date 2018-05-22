@@ -4,6 +4,9 @@ namespace BjyProfiler\Db\Profiler;
 
 use Zend\Db\Adapter\Profiler\ProfilerInterface;
 
+/**
+ * Class Profiler
+ */
 class Profiler implements ProfilerInterface
 {
 
@@ -21,7 +24,7 @@ class Profiler implements ProfilerInterface
     /**
      * @var array
      */
-    protected $profiles = array();
+    protected $profiles = [];
 
     /**
      * @var boolean
@@ -62,19 +65,13 @@ class Profiler implements ProfilerInterface
         return $this->filterTypes;
     }
 
-    public function startQuery($sql, $parameters = null, $stack = null)
+    public function startQuery($sql, $parameters = [], $stack = [])
     {
         if (!$this->enabled) {
             return null;
         }
 
-        if (is_null($stack)) {
-            if (version_compare('5.3.6', phpversion(), '<=')) {
-                $stack = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
-            } else {
-                $stack = array();
-            }
-        }
+        $stack or $stack = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
 
         // try to detect the query type
         switch (strtolower(substr(ltrim($sql), 0, 6))) {
@@ -115,7 +112,7 @@ class Profiler implements ProfilerInterface
 
     public function getQueryProfiles($queryTypes = null)
     {
-        $profiles = array();
+        $profiles = [];
 
         if (count($this->profiles)) {
             foreach ($this->profiles as $id => $profile) {
