@@ -1,19 +1,16 @@
 <?php
-/**
- * Created by Inditel Meedia OÜ
- * User: Oliver Leisalu
- */
 
 namespace BjyProfiler\Db\Adapter;
-
 
 use BjyProfiler\Db\Profiler\Profiler;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
+/**
+ * Class ProfilingAdapterFactory
+ */
 class ProfilingAdapterFactory implements FactoryInterface
 {
-
     /**
      * @param ServiceLocatorInterface $serviceLocator
      * @return mixed
@@ -23,13 +20,14 @@ class ProfilingAdapterFactory implements FactoryInterface
         $config = $serviceLocator->get('Configuration');
         $dbParams = $config['db'];
         $adapter = new ProfilingAdapter($dbParams);
-
         $adapter->setProfiler(new Profiler);
+
         if (isset($dbParams['options']) && is_array($dbParams['options'])) {
             $options = $dbParams['options'];
         } else {
             $options = array();
         }
+
         $adapter->injectProfilingStatementPrototype($options);
         return $adapter;
     }

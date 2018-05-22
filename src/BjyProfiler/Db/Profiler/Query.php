@@ -2,101 +2,173 @@
 
 namespace BjyProfiler\Db\Profiler;
 
-use BjyProfiler\Db\Profiler\Profiler;
-
+/**
+ * Class Query
+ */
 class Query
 {
-    protected $sql = '';
-    protected $queryType = 0;
-    protected $startTime = null;
-    protected $endTime = null;
-    protected $parameters = null;
-    protected $callStack = array();
+    /**
+     * @var string|null
+     */
+    protected $sql;
 
-    public function __construct($sql, $queryType, $parameters = null, $stack = array())
+    /**
+     * @var int|null
+     */
+    protected $queryType;
+
+    /**
+     * @var array
+     */
+    protected $queryTypes = [
+        Profiler::SELECT  => 'SELECT',
+        Profiler::INSERT  => 'INSERT',
+        Profiler::UPDATE  => 'UPDATE',
+        Profiler::DELETE  => 'DELETE',
+        Profiler::QUERY   => 'OTHER',
+        Profiler::CONNECT => 'CONNECT',
+    ];
+
+    /**
+     * @var float|null
+     */
+    protected $startTime;
+
+    /**
+     * @var float|null
+     */
+    protected $endTime;
+
+    /**
+     * @var array
+     */
+    protected $parameters = [];
+
+    /**
+     * @var array
+     */
+    protected $callStack = [];
+
+    /**
+     * @param string $sql
+     * @param int $queryType
+     * @param array $parameters
+     * @param array $stack
+     */
+    public function __construct(string $sql, int $queryType, array $parameters = [], array $stack = [])
     {
-        $this->sql = $sql;
-        $this->queryType = $queryType;
+        $this->sql        = $sql;
+        $this->queryType  = $queryType;
         $this->parameters = $parameters;
-        $this->callStack = $stack;
+        $this->callStack  = $stack;
     }
 
+    /**
+     * @return $this
+     */
     public function start()
     {
         $this->startTime = microtime(true);
         return $this;
     }
 
+    /**
+     * @return $this
+     */
     public function end()
     {
         $this->endTime = microtime(true);
         return $this;
     }
 
-    public function hasEnded()
+    /**
+     * @return bool
+     */
+    public function hasEnded() : bool
     {
-        return ($this->endTime !== null);
+        return $this->endTime !== null;
     }
 
-    public function getElapsedTime()
-    {
-        if (!$this->hasEnded()) {
-            return false;
-        }
-        return $this->endTime - $this->startTime;
-    }
-
-    public function getSql()
-    {
-        return $this->sql;
-    }
-
-    public function getStartTime()
-    {
-        return $this->startTime;
-    }
-
-    public function getEndTime()
-    {
-        return $this->endTime;
-    }
-
-    public function getQueryType()
+    /**
+     * @return int|null
+     */
+    public function getQueryType() : ?int
     {
         return $this->queryType;
     }
 
+    /**
+     * @return string|null
+     */
+    public function getQueryTypeName() : ?string
+    {
+        return isset($this->queryTypes[$this->queryType]) ? $this->queryTypes[$this->queryType] : null;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getSql() : ?string
+    {
+        return $this->sql;
+    }
+
+    /**
+     * @return float|null
+     */
+    public function getDeltaTime() : ?float
+    {
+        if (!$this->hasEnded()) {
+            return null;
+        }
+        return $this->endTime - $this->startTime;
+    }
+
+    /**
+     * @return float|null
+     */
+    public function getStartTime() : ?float
+    {
+        return $this->startTime;
+    }
+
+    /**
+     * @return float|null
+     */
+    public function getEndTime() : ?float
+    {
+        return $this->endTime;
+    }
+
+    /**
+     * @return array
+     */
+    public function getParameters() : array
+    {
+        return $this->parameters;
+    }
+
+    /**
+     * @return array
+     */
+    public function getCallStack() : array
+    {
+        return $this->callStack;
+    }
+
+    /**
+     * @return array
+     */
     public function toArray()
     {
-        switch ($this->queryType) {
-            case Profiler::SELECT:
-                $type = 'SELECT';
-                break;
-            case Profiler::INSERT:
-                $type = 'INSERT';
-                break;
-            case Profiler::UPDATE:
-                $type = 'UPDATE';
-                break;
-            case Profiler::DELETE:
-                $type = 'DELETE';
-                break;
-            case Profiler::QUERY:
-                $type = 'OTHER';
-                break;
-            case Profiler::CONNECT:
-                $type = 'CONNECT';
-                break;
-        }
-
-        return array(
-            'type'    => $type,
-            'sql'     => $this->sql,
-            'start'   => $this->startTime,
-            'end'     => $this->endTime,
-            'elapsed' => $this->getElapsedTime(),
+        return [
+            'type'       => $this->getQueryTypeName(),
+            'sql'        => $this->sql,
+            'start'      => $this->startTime,
+            'end'        => $this->endTime,
+            'delta'      => $this->getDeltaTime(),
             'parameters' => $this->parameters,
-            'stack'   => $this->callStack
-        );
+            'stack'      => $this->callStack
+        ];
     }
 }
