@@ -92,7 +92,7 @@ class Profiler implements ProfilerInterface
                 break;
         }
 
-        $profile = new Query($sql, $queryType, $parameters, $stack);
+        $profile = new Query($sql, $queryType, (array) $parameters, $stack);
         $this->profiles[] = $profile;
         $profile->start();
 
